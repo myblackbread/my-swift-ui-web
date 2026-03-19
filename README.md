@@ -1,36 +1,60 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# MY-UI: SwiftUI-inspired React Framework 🚀
 
-## Getting Started
+Этот проект представляет собой кастомный декларативный UI-фреймворк для React, написанный на TypeScript, вдохновленный концепциями Apple SwiftUI. 
 
-First, run the development server:
+Вместо традиционной верстки на основе тегов и CSS-классов, проект предлагает объектно-ориентированный подход с цепочками модификаторов. В качестве демонстрации возможностей фреймворка реализован стандартный калькулятор iOS (app/page.tsx).
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+## ✨ Ключевые особенности
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+* Декларативный синтаксис: Настройка компонентов через чейнинг методов, таких как .padding(), .background(), .clipShape(), .frame().
+* Стеки компоновки: Привычные для iOS-разработчиков MYHStack, MYVStack и MYZStack для интуитивного выравнивания элементов.
+* Базовые компоненты: Строго типизированные MYText, MYButton, MYColor, MYAnyView.
+* Геометрия и формы: Встроенные MYRoundedRectangle (с поддержкой сглаживания continuous corners), MYCapsule, MYCircle.
+* Система модификаторов: Поддержка offset, opacity, scaleEffect, а также хуков жизненного цикла (onAppear, onDisappear, onChange).
+* Анимации: Удобная обертка для CSS-транзишенов через метод .animation().
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## 🛠 Стек технологий
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+* Ядро: React
+* Фреймворк: Next.js (App Router)
+* Язык: TypeScript
+* Стилизация: Инлайн-стили генерацией через модификаторы и хуки (без внешних CSS-файлов).
 
-## Learn More
+## 📱 Демонстрация: iOS Calculator
 
-To learn more about Next.js, take a look at the following resources:
+Точкой входа (app/page.tsx) служит приложение калькулятора. Оно демонстрирует:
+- Работу сложной стейт-логики математических операций.
+- Рендеринг вложенных стеков (VStack внутри HStack и т.д.).
+- Динамическое изменение стилей (например, подсветка активного оператора).
+- Анимации нажатия на кастомные кнопки.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## 🚀 Быстрый старт
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Установите зависимости и запустите локальный сервер разработки:
 
-## Deploy on Vercel
+    npm install
+    npm run dev
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+Откройте http://localhost:3000 в браузере, чтобы увидеть результат.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## 📖 Пример использования MY-UI
+
+Все UI-элементы наследуются от базового класса MYView. Для рендера дерева компонентов в React используется специальная обертка RenderMYView.
+
+    import { MYVStack, MYText, MYColor, RenderMYView, MYRoundedRectangle } from "@/my-ui";
+
+    const myView = new MYVStack([
+      new MYText("Hello World")
+        .font(24)
+        .foregroundColor("white")
+    ])
+      .background(MYColor.black)
+      .padding(20)
+      .clipShape(new MYRoundedRectangle(16));
+
+    export default function App() {
+      return <RenderMYView view={myView} />;
+    }
+
+## 🤝 Вклад в проект
+Если вы хотите расширить библиотеку компонентов, добавьте новый класс в папку my-ui/components или новый модификатор в my-ui/modifiers, унаследовав его от интерфейса MYViewModifier.
