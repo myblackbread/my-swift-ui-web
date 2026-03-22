@@ -21,11 +21,9 @@ export class MYScrollView extends MYView {
                 dynamicStyle={{
                     style: (prev) => ({
                         ...prev,
-                        // Включаем скролл
                         overflowX: this.axis === "horizontal" || this.axis === "both" ? "auto" : "hidden",
                         overflowY: this.axis === "vertical" || this.axis === "both" ? "auto" : "hidden",
                         
-                        // Сбрасываем Flex-ограничения родителя, чтобы ScrollView мог сжиматься и скроллить
                         flexShrink: 1, 
                         minHeight: this.axis === "vertical" || this.axis === "both" ? 0 : undefined,
                         minWidth: this.axis === "horizontal" || this.axis === "both" ? 0 : undefined,
@@ -33,10 +31,8 @@ export class MYScrollView extends MYView {
                         width: "100%",
                         height: "100%",
                         
-                        // КРИТИЧЕСКИ ВАЖНО: Возвращаем перехват событий мыши/тапов, отмененный ZStack/VStack
                         pointerEvents: "auto", 
                         
-                        // Для скролл-контейнера block часто работает надежнее, чем flex
                         display: "block", 
                     })
                 }}
@@ -45,7 +41,6 @@ export class MYScrollView extends MYView {
                     display: "flex", 
                     flexDirection: this.axis === "horizontal" ? "row" : "column",
                     width: this.axis === "horizontal" ? "fit-content" : "100%",
-                    // Используем minHeight, чтобы контент не сплющивался
                     minHeight: this.axis === "vertical" ? "fit-content" : "100%", 
                     flexShrink: 0
                 }}>
