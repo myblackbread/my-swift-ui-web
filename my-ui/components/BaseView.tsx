@@ -15,12 +15,12 @@ const BASE_STYLES: React.CSSProperties = {
   isolation: "isolate",
 };
 
-export const MYBaseView = React.forwardRef(<K extends keyof HTMLElementTagNameMap = "div">(
+const BaseViewRender = <K extends keyof HTMLElementTagNameMap = "div">(
   props: MYBaseViewProps<K>,
   ref: React.Ref<HTMLElementTagNameMap[K]>
 ) => {
   const { element, frame, dynamicStyle, children, renderContext } = props;
-  const component = (element || "div");
+  const component = (element || "div") as string;
 
   const transitionStyle = renderContext?.animation
     ? { transition: `all ${renderContext.animation.duration}s ${renderContext.animation.timingCurve}` }
@@ -57,4 +57,8 @@ export const MYBaseView = React.forwardRef(<K extends keyof HTMLElementTagNameMa
     { ref: ref, ...finalProps },
     children
   );
-});
+};
+
+export const MYBaseView = React.forwardRef(BaseViewRender) as <K extends keyof HTMLElementTagNameMap = "div">(
+  props: MYBaseViewProps<K> & { ref?: React.Ref<HTMLElementTagNameMap[K]> }
+) => React.ReactElement | null;

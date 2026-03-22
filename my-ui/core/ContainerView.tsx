@@ -5,8 +5,10 @@ import { MYFrame, isFlexible } from "../types/Frame";
 import { MYRenderContext } from "../types/RenderContext";
 import { MYDynamicStyle } from "../types/DynamicStyle";
 
+export type MYAnyViewChild = MYView | null | undefined | boolean;
+
 export abstract class MYContainerView<K extends keyof HTMLElementTagNameMap = "div"> extends MYView {
-    constructor(protected readonly children: MYView[]) {
+    constructor(protected readonly children: MYAnyViewChild[]) {
         super();
     }
 
@@ -19,6 +21,7 @@ export abstract class MYContainerView<K extends keyof HTMLElementTagNameMap = "d
         let needsFlexHeight = false;
 
         for (const child of this.children) {
+            if (!(child instanceof MYView)) continue;
             const childFrame = child.idealFrame;
             if (isFlexible(childFrame.width) || isFlexible(childFrame.maxWidth)) needsFlexWidth = true;
             if (isFlexible(childFrame.height) || isFlexible(childFrame.maxHeight)) needsFlexHeight = true;
@@ -71,6 +74,10 @@ export abstract class MYContainerView<K extends keyof HTMLElementTagNameMap = "d
         );
     }
 
+    protected get hasSpacer(): boolean {
+        return this.children.some(child => child instanceof MYView && child.isSpacer);
+    }
+
     protected getChildWrapperStyle(index: number): React.CSSProperties {
         return { pointerEvents: "none" };
     }
@@ -80,15 +87,18 @@ export abstract class MYContainerView<K extends keyof HTMLElementTagNameMap = "d
     }
 
     private renderContent(context?: MYRenderContext): React.ReactNode {
-        return this.children.map((child, index) => (
-            <MYBaseView
-                frame={{ maxWidth: Infinity, maxHeight: Infinity }}
-                key={index}
-                renderContext={context}
-                dynamicStyle={{ style: (prev) => ({ ...prev, ...this.getChildWrapperStyle(index) }) }}
-            >
-                {child.body(context)}
-            </MYBaseView>
-        ));
+        return this.children.map((child, index) => {
+            if (!(child instanceof MYView)) return null;
+            return (
+                <MYBaseView
+                    frame={{ maxWidth: Infinity, maxHeight: Infinity }}
+                    key={index}
+                    renderContext={context}
+                    dynamicStyle={{ style: (prev) => ({ ...prev, ...this.getChildWrapperStyle(index) }) }}
+                >
+                    {child.body(context)}
+                </MYBaseView>
+            );
+        });
     }
 }

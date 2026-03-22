@@ -3,16 +3,24 @@ import { MYView } from "../core/View";
 import { MYBaseView } from "../components/BaseView";
 import { MYVerticalAlignment } from "../types/VerticalAlignment";
 import { isFlexible, MYFrame } from "../types/Frame";
-import { MYContainerView } from "../core/ContainerView";
+import { MYAnyViewChild, MYContainerView } from "../core/ContainerView";
 import { MYDynamicStyle } from "../types/DynamicStyle";
 
 export class MYHStack extends MYContainerView<"div"> {
     constructor(
-        children: MYView[],
+        children: MYAnyViewChild[],
         private readonly spacing: number = 8,
         private readonly alignment: MYVerticalAlignment = "center"
     ) {
         super(children);
+    }
+
+    get idealFrame(): MYFrame {
+        const baseFrame = super.idealFrame;
+        if (this.hasSpacer) {
+            baseFrame.maxWidth = Infinity;
+        }
+        return baseFrame;
     }
 
     private getAlignItems(): string {

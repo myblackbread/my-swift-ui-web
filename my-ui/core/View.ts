@@ -22,12 +22,21 @@ import { MYAnimation, MYAnimations } from "../types/Animation";
 import { MYAnimationModifier } from "../modifiers/AnimationModifier";
 import { MYOffset } from "../types/Offset";
 import { MYOverlayType } from "../types/OverlayType";
+import { MYFontModifier, MYFontWeightModifier } from "../modifiers/FontModifier";
+import { MYFont, MYFontWeight } from "../types/Font";
+import { MYForegroundStyle } from "../types/ForegroundStyle";
+import { MYForegroundStyleModifier } from "../modifiers/ForegroundStyleModifier";
+import { MYDisabledModifier } from "../modifiers/DisabledModifier";
 
 export abstract class MYView {
   abstract body(context?: MYRenderContext, frame?: MYFrame): React.ReactNode;
 
   get idealFrame(): MYFrame {
     return {};
+  }
+
+  get isSpacer(): boolean {
+    return false;
   }
 
   static from(node: React.ReactNode): MYView {
@@ -54,8 +63,24 @@ export abstract class MYView {
     return this.modifier(new MYClipShapeModifier(shape));
   }
 
+  disabled(isDisabled: boolean = true): MYView {
+    return this.modifier(new MYDisabledModifier(isDisabled));
+  }
+
   frame(value: MYFrame): MYView {
     return this.modifier(new MYFrameModifier(value));
+  }
+
+  font(font: MYFont): MYView {
+    return this.modifier(new MYFontModifier(font));
+  }
+
+  fontWeight(weight: MYFontWeight): MYView {
+    return this.modifier(new MYFontWeightModifier(weight));
+  }
+
+  foregroundStyle(style: MYForegroundStyle): MYView {
+    return this.modifier(new MYForegroundStyleModifier(style));
   }
 
   offset(offset: MYOffset): MYView {
@@ -116,6 +141,10 @@ class MYModifiedContent extends MYView {
     }
 
     return childFrame;
+  }
+
+  get isSpacer(): boolean {
+    return this.content.isSpacer;
   }
 }
 

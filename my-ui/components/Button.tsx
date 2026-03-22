@@ -14,13 +14,20 @@ const ButtonInner: React.FC<{
 
     const isPressedRef = useRef(false);
 
-    const pressOverlay = MYColor.rgb(1, 1, 1, isPressed ? 0.3 : 0).allowsHitTesting(false);
+    const isDisabled = context?.disabled === true;
+
+    const pressOverlay = MYColor.rgb(1, 1, 1, isPressed && !isDisabled ? 0.3 : 0).allowsHitTesting(false);
 
     const hitTestLayer = new MYAnyView(
         <MYBaseView
             renderContext={context}
             frame={{ maxWidth: Infinity, maxHeight: Infinity }}
             dynamicStyle={{
+                style: (prev) => ({
+                    ...prev,
+                    cursor: isDisabled ? "default" : "pointer",
+                    pointerEvents: isDisabled ? "none" : "auto" 
+                }),
                 onPointerDown: (prev) => (e) => {
                     if (prev) prev(e);
                     isPressedRef.current = true;
@@ -60,19 +67,25 @@ const ButtonInner: React.FC<{
 
 export class MYButton extends MYView {
     constructor(
-        private readonly label: MYView,
         private readonly action: () => void,
+        private readonly label: MYView
     ) {
         super();
     }
 
     body(context?: MYRenderContext, frame?: MYFrame): React.ReactNode {
-        return (
+        const isDisabled = context?.disabled === true;
+
+        const buttonView = new MYAnyView(
             <ButtonInner
                 action={this.action}
                 children={this.label.body(context, frame)}
                 context={context}
             />
         );
+
+        return isDisabled 
+            ? buttonView.opacity(0.5).body(context, frame) 
+            : buttonView.body();
     }
 }

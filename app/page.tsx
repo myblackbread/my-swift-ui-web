@@ -1,6 +1,7 @@
 "use client";
 import MusicPlayerExample from "./examples/music-player/page";
 import CalculatorExample from "./examples/calculator/page";
+import ClopeExample from "./examples/clope-mushrooms/page";
 import { MYBaseView } from "@/my-ui";
 
 export default function Test() {

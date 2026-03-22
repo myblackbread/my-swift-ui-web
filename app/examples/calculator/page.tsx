@@ -1,4 +1,3 @@
-
 import React from "react";
 import {
   RenderMYView,
@@ -10,6 +9,7 @@ import {
   MYAnimations,
   MYButton,
   MYCapsule,
+  MYZStack,
 } from "@/my-ui";
 
 export default function CalculatorExample() {
@@ -18,6 +18,7 @@ export default function CalculatorExample() {
   const [operator, setOperator] = React.useState<string | null>(null);
   const [waitingForSecondOperand, setWaitingForSecondOperand] = React.useState(false);
 
+  // Палитра iOS
   const colors = {
     darkGray: MYColor.rgb(51, 51, 51),
     lightGray: MYColor.rgb(165, 165, 165),
@@ -66,38 +67,40 @@ export default function CalculatorExample() {
     isDouble: boolean = false,
     isActive: boolean = false
   ) => {
-    const textColor = color === colors.lightGray ? "black" : "white";
+    const textColor = color === colors.lightGray ? MYColor.black : MYColor.white;
     const bgColor = isActive ? MYColor.white : color;
-    const finalTextColor = isActive ? "rgb(255, 159, 10)" : textColor;
+    const finalTextColor = isActive ? colors.orange : textColor;
 
-    return new MYButton(
-      new MYText(label)
-        .foregroundColor(finalTextColor)
-        .font(32)
-        .fontWeight(400)
-        .frame(isDouble ? { maxWidth: Infinity, alignment: "left" } : {})
-        .padding(isDouble ? { left: 32 } : 0)
-        .frame({
-          width: isDouble ? 158 : 74,
-          height: 74
-        })
-        .background(bgColor)
-        .clipShape(new MYCapsule()),
-      action
-    )
+    const buttonLabel = new MYZStack([
+        new MYText(label)
+            .foregroundStyle(finalTextColor)
+            .font({ size: 36 })
+            .fontWeight("medium")
+            .frame(isDouble ? { maxWidth: Infinity, alignment: "left" } : {})
+            .padding(isDouble ? { edges: "left", length: 28 } : 0)
+    ], "center")
+      .frame({
+        width: isDouble ? 168 : 78,
+        height: 78
+      })
+      .background(bgColor)
+      .clipShape(new MYCapsule());
+
+    return new MYButton(action, buttonLabel)
       .animation(MYAnimations.easeInOut(0.15));
   };
 
   const calculatorView = new MYVStack([
     new MYVStack([
       new MYText(display)
-        .font(display.length > 7 ? 50 : 70)
-        .foregroundColor("white")
-        .fontWeight(300)
+        .font({ size: display.length > 7 ? 60 : 84 })
+        .foregroundStyle("white")
+        .fontWeight("light")
         .frame({ maxWidth: Infinity, alignment: "right" })
-    ])
+    ], 0, "right")
       .frame({ height: 160, alignment: "bottom" })
-      .padding({ edges: "horizontal", length: 30 }),
+      .padding({ edges: "horizontal", length: 32 })
+      .padding({ edges: "bottom", length: 16 }),
 
     new MYVStack([
       new MYHStack([
@@ -105,28 +108,28 @@ export default function CalculatorExample() {
         CalcButton("+/-", () => setDisplay(String(parseFloat(display) * -1)), colors.lightGray),
         CalcButton("%", () => setDisplay(String(parseFloat(display) / 100)), colors.lightGray),
         CalcButton("÷", () => handleOperator("÷"), colors.orange, false, operator === "÷"),
-      ], 10),
+      ], 12),
 
       new MYHStack([
         CalcButton("7", () => inputDigit("7")),
         CalcButton("8", () => inputDigit("8")),
         CalcButton("9", () => inputDigit("9")),
         CalcButton("×", () => handleOperator("×"), colors.orange, false, operator === "×"),
-      ], 10),
+      ], 12),
 
       new MYHStack([
         CalcButton("4", () => inputDigit("4")),
         CalcButton("5", () => inputDigit("5")),
         CalcButton("6", () => inputDigit("6")),
         CalcButton("-", () => handleOperator("-"), colors.orange, false, operator === "-"),
-      ], 10),
+      ], 12),
 
       new MYHStack([
         CalcButton("1", () => inputDigit("1")),
         CalcButton("2", () => inputDigit("2")),
         CalcButton("3", () => inputDigit("3")),
         CalcButton("+", () => handleOperator("+"), colors.orange, false, operator === "+"),
-      ], 10),
+      ], 12),
 
       new MYHStack([
         CalcButton("0", () => inputDigit("0"), colors.darkGray, true),
@@ -137,12 +140,13 @@ export default function CalculatorExample() {
           setFirstOperand(null);
           setOperator(null);
         }, colors.orange),
-      ], 10),
-    ], 10)
-  ], 10)
-    .padding(20)
+      ], 12),
+    ], 12, "center")
+  ], 10, "center")
+    .padding({ edges: "all", length: 20 })
     .background(colors.background)
-    .clipShape(new MYRoundedRectangle(45));
+    .clipShape(new MYRoundedRectangle(45, "continuous"))
+    .frame({ maxWidth: 400 });
 
   return <RenderMYView view={calculatorView} />;
 }

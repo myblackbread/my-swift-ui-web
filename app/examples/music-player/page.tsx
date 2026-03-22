@@ -9,15 +9,15 @@ import {
     MYRoundedRectangle,
     MYButton,
     MYCapsule,
-    MYAnimations
+    MYAnimations,
+    MYSpacer
 } from "@/my-ui";
 
 export default function MusicPlayerExample() {
     const [isPlaying, setIsPlaying] = React.useState(false);
-    const [progress, setProgress] = React.useState(0); // от 0 до 100
+    const [progress, setProgress] = React.useState(0);
     const intervalRef = React.useRef<NodeJS.Timeout | null>(null);
 
-    // Форматирование времени для плеера (например, 3:30)
     const formatTime = (percent: number) => {
         const totalSeconds = 210;
         const currentSeconds = Math.floor((percent / 100) * totalSeconds);
@@ -35,49 +35,44 @@ export default function MusicPlayerExample() {
         return `-${mins}:${secs.toString().padStart(2, "0")}`;
     };
 
-    // --- UI Компоненты ---
-
-    // 1. Обложка альбома (с анимацией увеличения при Play)
+    // 1. Обложка альбома с крутым градиентом
     const albumCover = new MYZStack([
-        new MYText("🎧").font(120).foregroundColor("white")
-    ])
-        .frame({ width: 320, height: 320 })
-        .background("linear-gradient(135deg, #FF2A54 0%, #FF5E3A 100%)")
-        .clipShape(new MYRoundedRectangle(32))
+        new MYText("🎧").font({ size: 130 }).foregroundStyle("white")
+    ], "center")
+        .frame({ width: 340, height: 340 })
+        .background("linear-gradient(135deg, #FF2A54 0%, #8A2387 100%)") // Premium gradient
+        .clipShape(new MYRoundedRectangle(32, "continuous"))
         .scaleEffect(isPlaying ? 1 : 0.85)
-        .animation(MYAnimations.easeInOut(0.5));
+        .animation(MYAnimations.easeInOut(0.6));
 
     // 2. Информация о треке
-    const Spacer = new MYColor("transparent").frame({ maxWidth: Infinity });
-
     const trackInfo = new MYHStack([
         new MYVStack([
             new MYText("Blinding Lights")
-                .font(24)
-                .fontWeight("bold")
-                .foregroundColor("white"),
+                .font({ size: 26, weight: "bold" })
+                .foregroundStyle("white"),
             new MYText("The Weeknd")
-                .font(18)
-                .foregroundColor(MYColor.rgb(180, 180, 180))
-        ], 4, "left"),
-        Spacer,
+                .font({ size: 20, weight: "medium" })
+                .foregroundStyle(MYColor.rgb(180, 180, 180))
+        ], 6, "left"),
+        new MYSpacer(),
         new MYButton(
+            () => alert("Открыто меню опций"),
             new MYText("•••")
-                .font(24)
-                .foregroundColor("white")
-                .padding({ bottom: 10 }),
-            () => alert("Открыто меню опций")
+                .font({ size: 24, weight: "bold" })
+                .foregroundStyle("white")
+                .padding({ edges: "bottom", length: 10 })
         )
-    ], 0)
-        .padding({ top: 30, bottom: 20 })
-        .padding({ edges: "horizontal", length: 8 });
+    ], 0, "center")
+        .padding({ edges: "top", length: 40 })
+        .padding({ edges: "bottom", length: 24 });
 
     // 3. Прогресс-бар
     const progressBar = new MYVStack([
         new MYZStack([
             new MYColor("rgba(255, 255, 255, 0.2)"),
             new MYColor("white")
-                .frame({ width: `${progress}%` })
+                .frame({ width: `${progress}%`, alignment: "left" })
         ], "left")
             .animation(MYAnimations.linear(0.5))
             .frame({ height: 6 })
@@ -85,40 +80,33 @@ export default function MusicPlayerExample() {
 
         new MYHStack([
             new MYText(formatTime(progress))
-                .font(12)
-                .foregroundColor(MYColor.rgb(150, 150, 150)),
-            Spacer,
+                .font({ size: 12, weight: "medium" })
+                .foregroundStyle(MYColor.rgb(150, 150, 150)),
+            new MYSpacer(),
             new MYText(formatRemaining(progress))
-                .font(12)
-                .foregroundColor(MYColor.rgb(150, 150, 150))
-        ])
-            .padding({ top: 8 })
-    ], 0)
-        .padding({ edges: "horizontal", length: 8 });
+                .font({ size: 12, weight: "medium" })
+                .foregroundStyle(MYColor.rgb(150, 150, 150))
+        ], 0, "center")
+            .padding({ edges: "top", length: 10 })
+    ], 0, "left");
 
     // 4. Кнопки управления
     const controls = new MYHStack([
         new MYButton(
-            new MYText("⏮")
-                .font(40)
-                .foregroundColor("white"),
-            () => setProgress(0)
+            () => setProgress(0),
+            new MYText("⏮").font({ size: 40 }).foregroundStyle("white")
         ),
         new MYButton(
-            new MYText(isPlaying ? "⏸" : "▶")
-                .font(50)
-                .foregroundColor("white"),
-            () => setIsPlaying(!isPlaying)
+            () => setIsPlaying(!isPlaying),
+            new MYText(isPlaying ? "⏸" : "▶").font({ size: 56 }).foregroundStyle("white")
         ),
         new MYButton(
-            new MYText("⏭")
-                .font(40)
-                .foregroundColor("white"),
-            () => setProgress(100)
+            () => setProgress(100),
+            new MYText("⏭").font({ size: 40 }).foregroundStyle("white")
         )
-    ], 40, "center")
-        .padding({ top: 30 })
-        .onChange(isPlaying, (oldValue, newValue) => {
+    ], 48, "center")
+        .padding({ edges: "top", length: 30 })
+        .onChange(isPlaying, (_, newValue) => {
             if (intervalRef.current) clearInterval(intervalRef.current);
             if (newValue) {
                 intervalRef.current = setInterval(() => {
@@ -132,20 +120,16 @@ export default function MusicPlayerExample() {
 
     // 5. Ползунок громкости
     const volumeBar = new MYHStack([
-        new MYText("🔈")
-            .font(12)
-            .foregroundColor("gray"),
+        new MYText("🔈").font({ size: 14 }).foregroundStyle("gray"),
         new MYZStack([
             new MYColor("rgba(255, 255, 255, 0.2)"),
-            new MYColor("white")
-                .frame({ width: "70%" })
+            new MYColor("white").frame({ width: "70%", alignment: "left" })
         ], "left")
             .frame({ height: 4 })
             .clipShape(new MYCapsule()),
-        new MYText("🔊")
-            .font(12)
-            .foregroundColor("gray")
-    ], 12).padding({ top: 40 });
+        new MYText("🔊").font({ size: 14 }).foregroundStyle("gray")
+    ], 16, "center")
+        .padding({ edges: "top", length: 45 });
 
     // Сборка всего экрана
     const mainView = new MYVStack([
@@ -155,9 +139,13 @@ export default function MusicPlayerExample() {
         controls,
         volumeBar
     ], 0, "center")
-        .frame({ width: 320 })
-        .frame({ maxWidth: Infinity, maxHeight: Infinity })
-        .background(MYColor.black);
+        .padding({ edges: "horizontal", length: 32 })
+        .frame({ maxWidth: 420, maxHeight: Infinity })
+        .background(MYColor.rgb(18, 18, 18));
 
-    return <RenderMYView view={mainView} />;
+    return (
+        <div style={{ display: 'flex', justifyContent: 'center', backgroundColor: 'black', height: '100vh', alignItems: 'center' }}>
+             <RenderMYView view={mainView} />
+        </div>
+    );
 }

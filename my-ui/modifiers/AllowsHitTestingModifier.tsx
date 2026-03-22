@@ -1,6 +1,5 @@
 import React from "react";
 import { MYViewModifier } from "../core/ViewModifier";
-import { MYBaseView } from "../components/BaseView";
 import { MYRenderContext } from "../types/RenderContext";
 import { MYFrame } from "../types/Frame";
 
