@@ -1,51 +1,36 @@
 import React from "react";
 import { MYView } from "../core/View";
 import { MYBaseView } from "./BaseView";
-import { MYRenderContext } from "../types/RenderContext";
 import { MYFrame } from "../types/Frame";
 import { MYAxis } from "../types/Axis";
 
 export class MYScrollView extends MYView {
     constructor(
         private readonly content: MYView,
-        private readonly axis: MYAxis = "vertical"
+        private readonly axis: MYAxis | MYAxis[] = "vertical"
     ) {
         super();
     }
 
-    body(context?: MYRenderContext, frame?: MYFrame): React.ReactNode {
+    makeView(frame?: MYFrame): React.ReactNode {
+        const isHorizontal = this.axis === "horizontal" || (Array.isArray(this.axis) && this.axis.includes("horizontal"));
+        const isVertical = this.axis === "vertical" || (Array.isArray(this.axis) && this.axis.includes("vertical"));
+        
         return (
             <MYBaseView
                 frame={frame}
-                renderContext={context}
                 dynamicStyle={{
                     style: (prev) => ({
                         ...prev,
-                        overflowX: this.axis === "horizontal" || this.axis === "both" ? "auto" : "hidden",
-                        overflowY: this.axis === "vertical" || this.axis === "both" ? "auto" : "hidden",
-                        
-                        flexShrink: 1, 
-                        minHeight: this.axis === "vertical" || this.axis === "both" ? 0 : undefined,
-                        minWidth: this.axis === "horizontal" || this.axis === "both" ? 0 : undefined,
-                        
-                        width: "100%",
-                        height: "100%",
-                        
-                        pointerEvents: "auto", 
-                        
-                        display: "block", 
+                        overflowX: this.axis === "horizontal" || this.axis.includes("horizontal") ? "scroll" : "hidden",
+                        overflowY: this.axis === "vertical" || this.axis.includes("vertical") ? "scroll" : "hidden",
+
+                        width: this.axis === "horizontal" || this.axis.includes("vertical") ? "100%" : prev?.width,
+                        height: this.axis === "vertical" || this.axis.includes("horizontal") ? "100%" : prev?.height,
                     })
                 }}
             >
-                <div style={{ 
-                    display: "flex", 
-                    flexDirection: this.axis === "horizontal" ? "row" : "column",
-                    width: this.axis === "horizontal" ? "fit-content" : "100%",
-                    minHeight: this.axis === "vertical" ? "fit-content" : "100%", 
-                    flexShrink: 0
-                }}>
-                    {this.content.body(context)}
-                </div>
+                {this.content.makeView()}
             </MYBaseView>
         );
     }

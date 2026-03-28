@@ -1,7 +1,7 @@
 
 export type MYAnimation = {
-  duration: number; // в секундах
-  timingCurve: string; // "linear", "ease-in-out", "cubic-bezier(...)" и т.д.
+  duration: number;
+  timingCurve: string;
 };
 
 export const MYAnimations = {

@@ -29,24 +29,3 @@ export const AlignmentMap: Record<
   bottomLeft: { justifyContent: "flex-start", alignItems: "flex-end" },
   bottomRight: { justifyContent: "flex-end", alignItems: "flex-end" },
 };
-
-// export type MYAlignmentValue = `${MYAlignment}`;
-
-// export function isAlignment(value: unknown): value is MYAlignmentValue {
-//     return typeof value === "string" && (Object.values(MYAlignment) as string[]).includes(value);
-// }
-
-// export const alignmentMap: Record<
-//   MYAlignment,
-//   { justifyContent: React.CSSProperties["justifyItems"]; alignItems: React.CSSProperties["alignItems"] }
-// > = {
-//   center: { justifyContent: "center", alignItems: "center" },
-//   top: { justifyContent: "center", alignItems: "flex-start" },
-//   bottom: { justifyContent: "center", alignItems: "flex-end" },
-//   left: { justifyContent: "flex-start", alignItems: "center" },
-//   right: { justifyContent: "flex-end", alignItems: "center" },
-//   topLeft: { justifyContent: "flex-start", alignItems: "flex-start" },
-//   topRight: { justifyContent: "flex-end", alignItems: "flex-start" },
-//   bottomLeft: { justifyContent: "flex-start", alignItems: "flex-end" },
-//   bottomRight: { justifyContent: "flex-end", alignItems: "flex-end" },
-// };

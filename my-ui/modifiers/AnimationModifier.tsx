@@ -7,13 +7,11 @@ export class MYAnimationModifier implements MYViewModifier {
   constructor(private readonly animation: MYAnimation) {}
 
   transformContext(context?: MYRenderContext): MYRenderContext {
-    return { 
-        ...context, 
-        animation: this.animation 
-    };
-  }
-
-  body(content: React.ReactNode): React.ReactNode {
-    return content;
+    if (context) {
+      context.animation = this.animation;
+      return context;
+    } else {
+      return { animation: this.animation };
+    }
   }
 }

@@ -1,2 +1,2 @@
 
-export type MYAxis = "vertical" | "horizontal" | "both";
+export type MYAxis = "vertical" | "horizontal";

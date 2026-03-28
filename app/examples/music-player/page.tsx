@@ -1,6 +1,5 @@
 import React from "react";
 import {
-    RenderMYView,
     MYText,
     MYColor,
     MYVStack,
@@ -10,7 +9,8 @@ import {
     MYButton,
     MYCapsule,
     MYAnimations,
-    MYSpacer
+    MYSpacer,
+    MYWindow
 } from "@/my-ui";
 
 export default function MusicPlayerExample() {
@@ -35,12 +35,12 @@ export default function MusicPlayerExample() {
         return `-${mins}:${secs.toString().padStart(2, "0")}`;
     };
 
-    // 1. Обложка альбома с крутым градиентом
+    // 1. Обложка альбома
     const albumCover = new MYZStack([
         new MYText("🎧").font({ size: 130 }).foregroundStyle("white")
     ], "center")
         .frame({ width: 340, height: 340 })
-        .background("linear-gradient(135deg, #FF2A54 0%, #8A2387 100%)") // Premium gradient
+        .background("linear-gradient(135deg, #FF2A54 0%, #8A2387 100%)")
         .clipShape(new MYRoundedRectangle(32, "continuous"))
         .scaleEffect(isPlaying ? 1 : 0.85)
         .animation(MYAnimations.easeInOut(0.6));
@@ -131,7 +131,7 @@ export default function MusicPlayerExample() {
     ], 16, "center")
         .padding({ edges: "top", length: 45 });
 
-    // Сборка всего экрана
+    // Сборка всего UI
     const mainView = new MYVStack([
         albumCover,
         trackInfo,
@@ -143,9 +143,9 @@ export default function MusicPlayerExample() {
         .frame({ maxWidth: 420, maxHeight: Infinity })
         .background(MYColor.rgb(18, 18, 18));
 
-    return (
-        <div style={{ display: 'flex', justifyContent: 'center', backgroundColor: 'black', height: '100vh', alignItems: 'center' }}>
-             <RenderMYView view={mainView} />
-        </div>
-    );
+    const screen = new MYZStack([mainView], "center")
+        .frame({ maxWidth: Infinity, maxHeight: Infinity })
+        .background(MYColor.black);
+
+    return new MYWindow(screen).render();
 }

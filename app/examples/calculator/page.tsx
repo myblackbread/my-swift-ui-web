@@ -1,6 +1,5 @@
 import React from "react";
 import {
-  RenderMYView,
   MYText,
   MYColor,
   MYVStack,
@@ -10,21 +9,21 @@ import {
   MYButton,
   MYCapsule,
   MYZStack,
+  MYWindow,
 } from "@/my-ui";
+
+const colors = {
+  darkGray: MYColor.rgb(51, 51, 51),
+  lightGray: MYColor.rgb(165, 165, 165),
+  orange: MYColor.rgb(255, 159, 10),
+  background: MYColor.black,
+};
 
 export default function CalculatorExample() {
   const [display, setDisplay] = React.useState("0");
   const [firstOperand, setFirstOperand] = React.useState<number | null>(null);
   const [operator, setOperator] = React.useState<string | null>(null);
   const [waitingForSecondOperand, setWaitingForSecondOperand] = React.useState(false);
-
-  // Палитра iOS
-  const colors = {
-    darkGray: MYColor.rgb(51, 51, 51),
-    lightGray: MYColor.rgb(165, 165, 165),
-    orange: MYColor.rgb(255, 159, 10),
-    background: MYColor.black,
-  };
 
   const inputDigit = (digit: string) => {
     if (waitingForSecondOperand) {
@@ -72,17 +71,14 @@ export default function CalculatorExample() {
     const finalTextColor = isActive ? colors.orange : textColor;
 
     const buttonLabel = new MYZStack([
-        new MYText(label)
-            .foregroundStyle(finalTextColor)
-            .font({ size: 36 })
-            .fontWeight("medium")
-            .frame(isDouble ? { maxWidth: Infinity, alignment: "left" } : {})
-            .padding(isDouble ? { edges: "left", length: 28 } : 0)
+      new MYText(label)
+        .foregroundStyle(finalTextColor)
+        .font({ size: 36 })
+        .fontWeight("medium")
+        .frame(isDouble ? { maxWidth: Infinity, alignment: "left" } : {})
+        .padding(isDouble ? { edges: "left", length: 28 } : 0)
     ], "center")
-      .frame({
-        width: isDouble ? 168 : 78,
-        height: 78
-      })
+      .frame({ width: isDouble ? 168 : 78, height: 78 })
       .background(bgColor)
       .clipShape(new MYCapsule());
 
@@ -94,7 +90,7 @@ export default function CalculatorExample() {
     new MYVStack([
       new MYText(display)
         .font({ size: display.length > 7 ? 60 : 84 })
-        .foregroundStyle("white")
+        .foregroundStyle(MYColor.white)
         .fontWeight("light")
         .frame({ maxWidth: Infinity, alignment: "right" })
     ], 0, "right")
@@ -148,5 +144,9 @@ export default function CalculatorExample() {
     .clipShape(new MYRoundedRectangle(45, "continuous"))
     .frame({ maxWidth: 400 });
 
-  return <RenderMYView view={calculatorView} />;
+  const screen = new MYZStack([calculatorView], "center")
+    .frame({ maxWidth: Infinity, maxHeight: Infinity })
+    .background(MYColor.rgb(20, 20, 20));
+
+  return new MYWindow(screen).render();
 }

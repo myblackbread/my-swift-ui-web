@@ -2,7 +2,6 @@
 import React, { useRef, useState } from "react";
 import { MYView } from "../core/View";
 import { MYBaseView } from "./BaseView";
-import { MYRenderContext } from "../types/RenderContext";
 import { MYFrame } from "../types/Frame";
 import { MYGeometryProxy } from "../types/GeometryProxy";
 import { MYSize } from "../types/Size";
@@ -10,9 +9,8 @@ import { useIsomorphicLayoutEffect } from "../hooks/useIsomorphicLayoutEffect";
 
 const GeometryReaderInner: React.FC<{
     content: (proxy: MYGeometryProxy) => MYView;
-    context?: MYRenderContext;
     frame?: MYFrame;
-}> = ({ content, context, frame }) => {
+}> = ({ content, frame }) => {
     const containerRef = useRef<HTMLDivElement>(null);
     const [size, setSize] = useState<MYSize>({ width: 0, height: 0 });
 
@@ -38,7 +36,6 @@ const GeometryReaderInner: React.FC<{
     return (
         <MYBaseView
             ref={containerRef}
-            renderContext={context}
             frame={frame}
             dynamicStyle={{
                 style: (prev) => ({
@@ -52,7 +49,7 @@ const GeometryReaderInner: React.FC<{
                 })
             }}
         >
-            {childView.body(context)}
+            {childView.makeView()}
         </MYBaseView>
     );
 };
@@ -62,8 +59,8 @@ export class MYGeometryReader extends MYView {
         super();
     }
 
-    body(context?: MYRenderContext, frame?: MYFrame): React.ReactNode {
-        return <GeometryReaderInner content={this.content} context={context} frame={frame} />;
+    makeView(frame?: MYFrame): React.ReactNode {
+        return <GeometryReaderInner content={this.content} frame={frame} />;
     }
 
     get idealFrame(): MYFrame {

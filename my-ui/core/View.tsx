@@ -17,22 +17,35 @@ import { MYPaddingModifier } from "../modifiers/PaddingModifier";
 import { MYScaleEffect } from "../types/ScaleEffect";
 import { MYScaleEffectModifier } from "../modifiers/ScaleEffectModifier";
 import { MYFrame } from "../types/Frame";
-import { MYRenderContext } from "../types/RenderContext";
 import { MYAnimation, MYAnimations } from "../types/Animation";
 import { MYAnimationModifier } from "../modifiers/AnimationModifier";
 import { MYOffset } from "../types/Offset";
 import { MYOverlayType } from "../types/OverlayType";
-import { MYFontModifier, MYFontWeightModifier } from "../modifiers/FontModifier";
+import { MYFontModifier } from "../modifiers/FontModifier";
+import { MYFontWeightModifier } from "../modifiers/FontWeightModifier";
 import { MYFont, MYFontWeight } from "../types/Font";
 import { MYForegroundStyle } from "../types/ForegroundStyle";
 import { MYForegroundStyleModifier } from "../modifiers/ForegroundStyleModifier";
 import { MYDisabledModifier } from "../modifiers/DisabledModifier";
+import { MYContextWrapper } from "./ContextWrapper";
 
 export abstract class MYView {
-  abstract body(context?: MYRenderContext, frame?: MYFrame): React.ReactNode;
+  body(): MYView {
+    return this;
+  }
+
+  makeView(frame?: MYFrame): React.ReactNode {
+    const b = this.body();
+    if (b === this) {
+      throw new Error("Primitive views must override makeView()");
+    }
+    return b.makeView(frame);
+  }
 
   get idealFrame(): MYFrame {
-    return {};
+    const b = this.body();
+    if (b === this) return {};
+    return b.idealFrame;
   }
 
   get isSpacer(): boolean {
@@ -41,6 +54,17 @@ export abstract class MYView {
 
   static from(node: React.ReactNode): MYView {
     return new MYAnyView(node);
+  }
+
+  protected _viewId?: string | number;
+
+  get viewId(): string | number | undefined {
+    return this._viewId;
+  }
+
+  id(identifier: string | number): this {
+    this._viewId = identifier;
+    return this;
   }
 
   modifier(mod: MYViewModifier): MYView {
@@ -124,14 +148,26 @@ class MYModifiedContent extends MYView {
     super();
   }
 
-  body(context?: MYRenderContext): React.ReactNode {
-    const nextContext = this.modifierRule.transformContext
-      ? this.modifierRule.transformContext(context)
-      : context;
+  makeView(frame?: MYFrame): React.ReactNode {
+    const viewToRender = this.modifierRule.body
+      ? this.modifierRule.body(this.content)
+      : this.content;
 
-    const childNode = this.content.body(nextContext);
+    let childNode = viewToRender.makeView(frame);
 
-    return this.modifierRule.body(childNode, nextContext, this.idealFrame);
+    if (this.modifierRule.transformContext) {
+      return (
+        <MYContextWrapper transform={this.modifierRule.transformContext.bind(this.modifierRule)}>
+          {childNode}
+        </MYContextWrapper>
+      );
+    }
+
+    return childNode;
+  }
+
+  get viewId(): string | number | undefined {
+    return this._viewId ?? this.content.viewId;
   }
 
   get idealFrame(): MYFrame {
@@ -149,15 +185,16 @@ class MYModifiedContent extends MYView {
 }
 
 export class MYAnyView extends MYView {
-  constructor(private readonly node: React.ReactNode) {
-    super()
+  constructor(
+    private readonly content: React.ReactNode | ((frame?: MYFrame) => React.ReactNode)
+  ) {
+    super();
   }
 
-  body(): React.ReactNode {
-    return this.node;
-  }
-
-  get idealFrame(): MYFrame {
-    return {};
+  makeView(frame?: MYFrame): React.ReactNode {
+    if (typeof this.content === 'function') {
+      return this.content(frame);
+    }
+    return this.content;
   }
 }

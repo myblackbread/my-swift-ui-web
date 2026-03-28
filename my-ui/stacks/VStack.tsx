@@ -1,8 +1,6 @@
 import React from "react";
-import { MYView } from "../core/View";
-import { MYBaseView } from "../components/BaseView";
 import { MYHorizontalAlignment } from "../types/HorizontalAlignment";
-import { isFlexible, MYFrame } from "../types/Frame";
+import { MYFrame } from "../types/Frame";
 import { MYAnyViewChild, MYContainerView } from "../core/ContainerView";
 import { MYDynamicStyle } from "../types/DynamicStyle";
 
@@ -10,7 +8,7 @@ export class MYVStack extends MYContainerView<"div"> {
     constructor(
         children: MYAnyViewChild[],
         private readonly spacing: number = 8,
-        private readonly alignment: MYHorizontalAlignment = "center" // "leading" | "center" | "trailing"
+        private readonly alignment: MYHorizontalAlignment = "center"
     ) {
         super(children);
     }
@@ -46,6 +44,7 @@ export class MYVStack extends MYContainerView<"div"> {
                 display: "flex",
                 flexDirection: "column",
                 gap: this.spacing,
+                justifyContent: "center",
                 alignItems: this.getAlignItems()
             })
         };

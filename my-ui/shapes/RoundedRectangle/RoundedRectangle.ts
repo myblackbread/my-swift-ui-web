@@ -22,7 +22,6 @@ export class MYRoundedRectangle extends MYShape {
       : this.continuousPath(w, h, rx, ry);
   }
 
-  /** Вычисление радиусов */
   private computeRadii(container: MYSize): [number, number, number, number] {
     let w = container.width;
     let h = container.height;
@@ -36,14 +35,12 @@ export class MYRoundedRectangle extends MYShape {
       ry = this.cornerRadiusOrSize.height;
     }
 
-    // Ограничение радиусов половиной сторон
     rx = Math.min(rx, w / 2);
     ry = Math.min(ry, h / 2);
 
     return [w, h, rx, ry];
   }
 
-  /** Классический закруглённый прямоугольник (circular) */
   private circularPath(w: number, h: number, rx: number, ry: number): string {
     return [
       `M ${rx},0`,
@@ -59,9 +56,8 @@ export class MYRoundedRectangle extends MYShape {
     ].join(" ");
   }
 
-  /** Плавный continuous corner (Bezier-переходы) */
   private continuousPath(w: number, h: number, rx: number, ry: number): string {
-    const k = 0.551915024494; // коэффициент сглаживания для круга
+    const k = 0.551915024494;
     const cx = rx * k;
     const cy = ry * k;
 
